@@ -3,14 +3,65 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Давайте думать</title>
+<title>NERIYADJ — in progress</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Unbounded:wght@800&display=swap" rel="stylesheet">
 <style>
-html,body{margin:0;height:100%;background:#000}
-body{display:flex;align-items:center;justify-content:center}
-video{max-width:100%;max-height:100vh;width:100%;outline:none}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#05070a;color:#dfe7ef;overflow:hidden}
+body{font-family:'Space Mono',monospace}
+.bg{position:fixed;inset:-4%;background:url(bg.jpg) center/cover no-repeat;filter:grayscale(1) contrast(1.15) brightness(.55);animation:drift 24s ease-in-out infinite alternate}
+@keyframes drift{from{transform:scale(1) rotate(0)}to{transform:scale(1.08) rotate(-1.2deg)}}
+.veil{position:fixed;inset:0;background:radial-gradient(ellipse at center,rgba(5,7,10,.15),rgba(5,7,10,.85) 80%)}
+.scan{position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 3px);mix-blend-mode:overlay}
+.scan::after{content:"";position:absolute;left:0;right:0;height:18vh;background:linear-gradient(transparent,rgba(200,220,255,.07),transparent);animation:sweep 6s linear infinite}
+@keyframes sweep{from{top:-20vh}to{top:110vh}}
+main{position:relative;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:16px}
+h1{font-family:'Unbounded',sans-serif;font-weight:800;font-size:clamp(2.4rem,11vw,9rem);letter-spacing:-.04em;line-height:.9;text-transform:uppercase;position:relative}
+h1::before,h1::after{content:attr(data-t);position:absolute;inset:0;opacity:.7}
+h1::before{color:#7fd0ff;transform:translate(-2px,0);clip-path:inset(0 0 55% 0);animation:g1 3.2s infinite steps(1)}
+h1::after{color:#ff4d6d;transform:translate(2px,0);clip-path:inset(60% 0 0 0);animation:g2 2.7s infinite steps(1)}
+@keyframes g1{0%,92%{transform:none}93%{transform:translate(-6px,-2px)}96%{transform:translate(4px,1px)}}
+@keyframes g2{0%,88%{transform:none}89%{transform:translate(6px,2px)}94%{transform:translate(-3px,0)}}
+.status{margin-top:2.2rem;font-size:clamp(.8rem,2.6vw,1.05rem);letter-spacing:.5em;text-transform:uppercase;display:flex;align-items:center;gap:.8em}
+.dot{width:.6em;height:.6em;background:#ff2b4a;border-radius:50%;box-shadow:0 0 12px #ff2b4a;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:.15}}
+.bar{margin-top:1.2rem;width:min(320px,70vw);height:2px;background:rgba(255,255,255,.12);overflow:hidden}
+.bar i{display:block;height:100%;width:30%;background:#dfe7ef;animation:load 2.2s cubic-bezier(.6,0,.4,1) infinite}
+@keyframes load{from{transform:translateX(-100%)}to{transform:translateX(340%)}}
+.corner{position:fixed;font-size:.7rem;letter-spacing:.25em;opacity:.55;text-transform:uppercase}
+.tl{top:16px;left:16px}.tr{top:16px;right:16px}.bl{bottom:16px;left:16px}.br{bottom:16px;right:16px}
 </style>
 </head>
 <body>
-<video src="video.mp4" controls playsinline preload="metadata"></video>
+<div class="bg"></div><div class="veil"></div><div class="scan"></div>
+<span class="corner tl">neriyadj.ru</span>
+<span class="corner tr" id="clk">--:--:--</span>
+<span class="corner bl">sys // 0x7f</span>
+<span class="corner br">msk</span>
+<main>
+  <h1 data-t="Neriyadj" id="t">Neriyadj</h1>
+  <div class="status"><span class="dot"></span>In progress</div>
+  <div class="bar"><i></i></div>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+const t=document.getElementById('t');
+t.innerHTML=[...t.textContent].map(ch=>'<span style="display:inline-block">'+ch+'</span>').join('');
+if(window.gsap){
+  const tl=gsap.timeline({defaults:{ease:'expo.out'}});
+  tl.from('.bg',{opacity:0,scale:1.25,duration:2.2})
+    .from('#t span',{y:()=>gsap.utils.random(-120,120),x:()=>gsap.utils.random(-60,60),rotate:()=>gsap.utils.random(-40,40),opacity:0,filter:'blur(12px)',duration:1.1,stagger:{each:.06,from:'random'}},'-=1.6')
+    .from('.status',{opacity:0,letterSpacing:'1.4em',duration:1},'-=.5')
+    .from('.bar',{scaleX:0,duration:.8},'-=.6')
+    .from('.corner',{opacity:0,y:8,duration:.6,stagger:.08},'-=.6');
+  setInterval(()=>{gsap.to('#t span',{y:()=>gsap.utils.random(-6,6),duration:.08,repeat:1,yoyo:true,stagger:.01})},4200);
+  document.addEventListener('pointermove',e=>{
+    gsap.to('.bg',{x:(e.clientX/innerWidth-.5)*-30,y:(e.clientY/innerHeight-.5)*-30,duration:1.2});
+  });
+}
+const c=document.getElementById('clk');
+setInterval(()=>{c.textContent=new Date().toLocaleTimeString('ru-RU',{timeZone:'Europe/Moscow'})},1000);
+</script>
 </body>
 </html>
